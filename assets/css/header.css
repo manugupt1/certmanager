@@ -1,0 +1,12 @@
+header {
+  background-color: #62a5ee;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.titles {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+  font-size: 1rem;
+}
