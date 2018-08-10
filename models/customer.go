@@ -4,9 +4,14 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/gobuffalo/validate"
+	"github.com/gobuffalo/validate/validators"
+
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
-	"github.com/gobuffalo/validate"
+	"github.com/pkg/errors"
 )
 
 type Customer struct {
@@ -34,19 +39,22 @@ func (c Customers) String() string {
 }
 
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
-// This method is not required and may be deleted.
+// It hashes the password using bcrypt before storing in the database
 func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
-}
+	validationErrors := validate.Validate(
+		&validators.StringIsPresent{Name: "Password", Field: c.Password},
+		&validators.StringIsPresent{Name: "Name", Field: c.Name},
+		&validators.EmailIsPresent{Name: "Email", Field: c.Email, Message: "Email is not in the right format"},
+	)
+	if validationErrors.Count() > 0 {
+		return validationErrors, nil
+	}
 
-// ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
-// This method is not required and may be deleted.
-func (c *Customer) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
-}
+	hash, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	c.Password = string(hash)
 
-// ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
-// This method is not required and may be deleted.
-func (c *Customer) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+	return nil, nil
 }
