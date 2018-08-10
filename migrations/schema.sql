@@ -69,6 +69,13 @@ ALTER TABLE ONLY public.customers
 
 
 --
+-- Name: customers_name_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX customers_name_idx ON public.customers USING btree (name);
+
+
+--
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
