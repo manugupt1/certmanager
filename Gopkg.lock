@@ -227,6 +227,8 @@
   packages = [
     "defaults",
     "randx",
+    "validate",
+    "validate/validators",
     "wait"
   ]
   revision = "0576708c56cea02331f864fe6e157ac7841923e4"
@@ -497,6 +499,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5ed5c81402100e0893c51aa7d07078ede5700510d610aa9a755675341509bbac"
+  inputs-digest = "814d1618fbfb2cbc377f1f8e50bc4d62c52c50f5c4a4baa106625b501b68ff85"
   solver-name = "gps-cdcl"
   solver-version = 1
