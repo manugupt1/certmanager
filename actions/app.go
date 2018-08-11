@@ -50,11 +50,12 @@ func App() *buffalo.App {
 		app.GET("/", HomeHandler)
 
 		g := app.Group("/customer")
+		custHandler := &CustomerActions{}
 
 		g.Use(middleware.SetContentType("application/json"))
 
-		g.POST("/create", nil)
-		g.GET("/list", nil)
+		g.POST("/create", custHandler.Create)
+		g.GET("/list", custHandler.List)
 		g.DELETE("/delete", nil)
 		g.POST("/certificate/create", nil)
 		g.POST("/certificate/list", nil)

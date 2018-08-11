@@ -53,6 +53,11 @@ func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (c *Customer) BeforeCreate(tx *pop.Connection) error {
+	id, err := uuid.NewV4()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	c.ID = id
 	hash, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return errors.WithStack(err)
