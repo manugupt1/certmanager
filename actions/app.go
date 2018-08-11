@@ -49,6 +49,18 @@ func App() *buffalo.App {
 
 		app.GET("/", HomeHandler)
 
+		g := app.Group("/customer")
+
+		g.Use(middleware.SetContentType("application/json"))
+
+		g.POST("/create", nil)
+		g.GET("/list", nil)
+		g.DELETE("/delete", nil)
+		g.POST("/certificate/create", nil)
+		g.POST("/certificate/list", nil)
+		g.POST("/certificate/activate", nil)
+		g.POST("/certificate/deactivate", nil)
+
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 
