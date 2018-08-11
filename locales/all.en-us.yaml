@@ -3,3 +3,5 @@
   translation: "CLOUDFLARE"
 - id: product
   translation: "Customer dashboard"
+- id: add_customer
+  translation: "Add customer"
