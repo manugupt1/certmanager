@@ -16,24 +16,23 @@ func (as *ActionSuite) Test_CustomerCreateHandler() {
 	}
 
 	expectSuccess := []models.Customer{
-		models.Customer{Name: "M", Email: "manu@example.com", Password: "password"},
-		models.Customer{Name: "M", Email: "manu1@example.com", Password: "password"},
+		models.Customer{Name: "M", Email: "manu3@example.com", Password: "password"},
+		models.Customer{Name: "M", Email: "manu4@example.com", Password: "password"},
 	}
 
 	for _, customer := range expectSuccess {
 		res := as.JSON("/customer/create").Post(customer)
-		as.Equal(200, res.Code)
+		as.Equal(200, res.Code, res.Body.String())
 		as.Empty(res.Body)
 	}
 
 	// TODO: Duplicate email fails but the response should be 422
 	// With an appropriate error messages
 	duplicateEmail := []models.Customer{
-		models.Customer{Name: "M", Email: "manu@example.com", Password: "password"},
+		models.Customer{Name: "M", Email: "manu4@example.com", Password: "password"},
 	}
 	res := as.JSON("/customer/create").Post(duplicateEmail[0])
 	as.Equal(422, res.Code, res.Body.String())
-
 }
 
 func (as *ActionSuite) Test_CustomerList() {

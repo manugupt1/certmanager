@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/gobuffalo/validate"
@@ -13,6 +12,8 @@ import (
 	"github.com/gobuffalo/uuid"
 )
 
+// Customer model is the reflection of table column 'customers' in the database
+// It implements queries that return single result or when results are to be created / updated / deleted.
 type Customer struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	CreatedAt time.Time `db:"created_at"`
@@ -22,19 +23,24 @@ type Customer struct {
 	Password  string    `json:"password" db:"password"`
 }
 
-// String is not required by pop and may be deleted
-func (c Customer) String() string {
-	jc, _ := json.Marshal(c)
-	return string(jc)
-}
-
-// Customers is not required by pop and may be deleted
+// Customers implements queries that can return more than 1 result from the model
 type Customers []Customer
 
-// String is not required by pop and may be deleted
-func (c Customers) String() string {
-	jc, _ := json.Marshal(c)
-	return string(jc)
+// EmailNotTaken is a custom validator to make sure that a user is not trying to insert the same email twice
+type EmailNotTaken struct {
+	Name  string
+	Field string
+	tx    *pop.Connection
+}
+
+// IsValid actually tries to check if the email is unique or not
+func (v *EmailNotTaken) IsValid(errors *validate.Errors) {
+	query := v.tx.Where("email = ?", v.Field)
+	queryEmail := &Customer{}
+	err := query.First(queryEmail)
+	if err == nil {
+		errors.Add(validators.GenerateKey(v.Name), "A customer with the email already exists")
+	}
 }
 
 // Gets a list of all the Customers
@@ -49,6 +55,7 @@ func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Name: "Password", Field: c.Password},
 		&validators.StringIsPresent{Name: "Name", Field: c.Name},
 		&validators.EmailIsPresent{Name: "Email", Field: c.Email, Message: "Email is not in the right format"},
+		&EmailNotTaken{Name: "Email", Field: c.Email, tx: tx},
 	), nil
 }
 

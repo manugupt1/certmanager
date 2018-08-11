@@ -71,4 +71,10 @@ func (c *CustomerSuite) Test_Create() {
 			c.Fail("Validation failed while updating, save and create", validationErrors.Error())
 		}
 	}
+
+	duplicateEmail := &Customer{Name: "m", Email: "manu@example.com", Password: "G"}
+	vErr, _ := duplicateEmail.Create(c.DB)
+	if !vErr.HasAny() {
+		c.Fail("Expecting to fail on creating a customer with duplicate email")
+	}
 }
