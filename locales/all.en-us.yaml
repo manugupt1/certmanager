@@ -5,3 +5,5 @@
   translation: "Customer dashboard"
 - id: add_customer
   translation: "Add customer"
+- id: delete_customer
+  translation: "Delete customer"

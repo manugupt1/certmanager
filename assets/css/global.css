@@ -4,3 +4,7 @@
 .underline {
   text-decoration: underline;
 }
+
+.text-sm {
+  font-size: smaller;
+}

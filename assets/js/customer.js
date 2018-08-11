@@ -1,6 +1,6 @@
 
 
-import {post} from './requests.js';
+import {Post, Delete} from './requests.js';
 import {updateStatus} from './status.js';
 
 export function add_customer() {
@@ -34,4 +34,17 @@ export function add_customer() {
 
 
   $('#addCustomer').modal('hide')
+}
+
+export function delete_customer() {
+  const email = document.getElementById("delete_cust_email").value
+
+  if (!email || email.length == 0) {
+    updateStatus("Needs an email to be entered")
+  }
+  Delete("/customer/delete", {email: email})
+  .catch(error => console.error(`Fetch Error =\n`, error));
+
+
+  $('#deleteCustomer').modal('hide')
 }

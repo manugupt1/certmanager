@@ -1,8 +1,7 @@
 require("expose-loader?$!expose-loader?jQuery!jquery");
 require("bootstrap/dist/js/bootstrap.bundle");
-require("./customer.js");
 
-import { add_customer } from './customer.js';
+import { add_customer, delete_customer } from './customer.js';
 
 $(() => {
 
@@ -10,4 +9,7 @@ $(() => {
     add_customer();
   })
 
+  $('#delete_customer').click(function () {
+    delete_customer();
+  })
 });
