@@ -15,12 +15,13 @@ import (
 // Customer model is the reflection of table column 'customers' in the database
 // It implements queries that return single result or when results are to be created / updated / deleted.
 type Customer struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-	Name      string    `json:"name" db:"name"`
-	Email     string    `json:"email" db:"email"`
-	Password  string    `json:"password" db:"password"`
+	ID           uuid.UUID    `json:"id" db:"id"`
+	CreatedAt    time.Time    `db:"created_at"`
+	UpdatedAt    time.Time    `db:"updated_at"`
+	Name         string       `json:"name" db:"name"`
+	Email        string       `json:"email" db:"email"`
+	Password     string       `json:"password" db:"password"`
+	Certificates Certificates `has_many:"certificates" order_by:"created_at desc"`
 }
 
 // Customers implements queries that can return more than 1 result from the model
@@ -43,7 +44,7 @@ func (v *EmailNotTaken) IsValid(errors *validate.Errors) {
 	}
 }
 
-// Gets a list of all the Customers
+// List returns all the customers
 func (c *Customers) List(tx *pop.Connection) error {
 	return tx.All(c)
 }

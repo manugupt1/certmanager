@@ -34,6 +34,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: certificates; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.certificates (
+    id uuid NOT NULL,
+    activated boolean DEFAULT false,
+    customer_id uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.certificates OWNER TO postgres;
+
+--
 -- Name: customers; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -61,6 +76,14 @@ CREATE TABLE public.schema_migration (
 ALTER TABLE public.schema_migration OWNER TO postgres;
 
 --
+-- Name: certificates certificates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.certificates
+    ADD CONSTRAINT certificates_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: customers customers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -80,6 +103,14 @@ CREATE UNIQUE INDEX customers_email_idx ON public.customers USING btree (email);
 --
 
 CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USING btree (version);
+
+
+--
+-- Name: certificates certificates_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.certificates
+    ADD CONSTRAINT certificates_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE;
 
 
 --

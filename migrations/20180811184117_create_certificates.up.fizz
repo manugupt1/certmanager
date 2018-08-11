@@ -1,0 +1,6 @@
+create_table("certificates") {
+	t.Column("id", "uuid", {"primary": true, "default_raw": "uuid_generate_v1()"})
+	t.Column("activated", "bool", {"default": false, "null": false})
+	t.Column("customer_id", "uuid", {"null": false})
+	t.ForeignKey("customer_id", {"customers":["id"]}, {"on_delete": "cascade"})
+}
