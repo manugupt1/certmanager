@@ -37,6 +37,11 @@ func (c Customers) String() string {
 	return string(jc)
 }
 
+// Gets a list of all the Customers
+func (c *Customers) List(tx *pop.Connection) error {
+	return tx.All(c)
+}
+
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // It hashes the password using bcrypt before storing in the database
 func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
@@ -47,11 +52,16 @@ func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	), nil
 }
 
+func (c *Customer) BeforeCreate(tx *pop.Connection) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return errors.WithStack(err)
 	}
 	c.Password = string(hash)
+	return nil
+}
 
-	return nil, nil
+// Create takes a running transaction and tries to add a Customer to the database. If it is not able to create one it will return an appropriate error.
+func (c *Customer) Create(tx *pop.Connection) (*validate.Errors, error) {
+	return tx.ValidateAndCreate(c)
 }

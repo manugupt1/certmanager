@@ -19,16 +19,16 @@ func Test_Customer(t *testing.T) {
 }
 
 func (c *CustomerSuite) Test_Validate() {
-	expectToFail := []Customer{
-		Customer{Name: "M", Email: "", Password: ""},
-		Customer{Name: "", Email: "E", Password: ""},
-		Customer{Name: "", Email: "", Password: "G"},
+	expectValidationErrors := []Customer{
+		Customer{Name: "M", Email: "manu@example.com", Password: ""},
+		Customer{Name: "Manu", Email: "", Password: "Gupta"},
+		Customer{Name: "", Email: "manu@example.com", Password: "Gupta"},
 		Customer{Name: "M", Email: "manuexample.com", Password: "G"},
 	}
 
-	for _, customer := range expectToFail {
-		validationErrors, _ := customer.Validate(nil)
-		if validationErrors.Count() == 0 {
+	for _, customer := range expectValidationErrors {
+		validationErrors, _ := customer.Validate(c.DB)
+		if !validationErrors.HasAny() {
 			c.Fail("Validation failed while updating, save and create", validationErrors.Error())
 		}
 	}
@@ -37,11 +37,38 @@ func (c *CustomerSuite) Test_Validate() {
 		Customer{Name: "M", Email: "manu@example.com", Password: "G"},
 	}
 	for _, customer := range expectToSucceed {
-		validationErrors, _ := customer.Validate(nil)
+		validationErrors, _ := customer.Validate(c.DB)
 
-		if validationErrors != nil {
+		if validationErrors.HasAny() {
+			c.Fail("Validation failed while updating, save and create", validationErrors.Error())
+		}
+	}
+}
+
+func (c *CustomerSuite) Test_Create() {
+	expectValidationErrors := []Customer{
+		Customer{Name: "M", Email: "manu@example.com", Password: ""},
+		Customer{Name: "Manu", Email: "", Password: "Gupta"},
+		Customer{Name: "", Email: "manu@example.com", Password: "Gupta"},
+		Customer{Name: "M", Email: "manuexample.com", Password: "G"},
+	}
+
+	for _, customer := range expectValidationErrors {
+		validationErrors, _ := customer.Create(c.DB)
+		if !validationErrors.HasAny() {
 			c.Fail("Validation failed while updating, save and create", validationErrors.Error())
 		}
 	}
 
+	expectToSucceed := []*Customer{
+		&Customer{Name: "M", Email: "manu@example.com", Password: "G"},
+	}
+
+	for _, customer := range expectToSucceed {
+		validationErrors, _ := customer.Create(c.DB)
+
+		if validationErrors.HasAny() {
+			c.Fail("Validation failed while updating, save and create", validationErrors.Error())
+		}
+	}
 }
