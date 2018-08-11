@@ -26,6 +26,7 @@ func App() *buffalo.App {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
 			SessionName: "_certmanager_session",
+			LooseSlash:  true,
 		})
 		// Automatically redirect to SSL
 		app.Use(forceSSL())
