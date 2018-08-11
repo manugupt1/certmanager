@@ -78,3 +78,12 @@ func (c *Customer) BeforeCreate(tx *pop.Connection) error {
 func (c *Customer) Create(tx *pop.Connection) (*validate.Errors, error) {
 	return tx.ValidateAndCreate(c)
 }
+
+func (c *Customer) Delete(tx *pop.Connection) error {
+	err := tx.Where("email = (?)", c.Email).First(c)
+	if err != nil {
+		return err
+	}
+	tx.Destroy(c)
+	return nil
+}

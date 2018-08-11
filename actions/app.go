@@ -56,7 +56,7 @@ func App() *buffalo.App {
 
 		g.POST("/create", custHandler.Create)
 		g.GET("/list", custHandler.List)
-		g.DELETE("/delete", nil)
+		g.DELETE("/delete", custHandler.Delete)
 		g.POST("/certificate/create", nil)
 		g.POST("/certificate/list", nil)
 		g.POST("/certificate/activate", nil)
