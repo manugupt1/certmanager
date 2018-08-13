@@ -18,10 +18,10 @@ type Customer struct {
 	ID           uuid.UUID    `json:"id" db:"id"`
 	CreatedAt    time.Time    `db:"created_at"`
 	UpdatedAt    time.Time    `db:"updated_at"`
-	Name         string       `json:"name" db:"name"`
-	Email        string       `json:"email" db:"email"`
-	Password     string       `json:"password" db:"password"`
-	Certificates Certificates `has_many:"certificates" order_by:"created_at desc"`
+	Name         string       `json:"name,omitempty" db:"name"`
+	Email        string       `json:"email,omitempty" db:"email"`
+	Password     string       `json:"password,omitempty" db:"password"`
+	Certificates Certificates `json:"certificates,omitempty" has_many:"certificates" order_by:"created_at desc"`
 }
 
 // Customers implements queries that can return more than 1 result from the model
@@ -85,5 +85,14 @@ func (c *Customer) Delete(tx *pop.Connection) error {
 		return err
 	}
 	tx.Destroy(c)
+	return nil
+}
+
+func (c *Customer) ListCertificate(tx *pop.Connection) error {
+	err := tx.Load(c, "Certificates")
+	// err := tx.RawQuery("select * from customers inner join certificates ON customers.id = certificates.customer_id").All(c)
+	if err != nil {
+		return err
+	}
 	return nil
 }
