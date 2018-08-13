@@ -46,7 +46,7 @@ func (v *EmailNotTaken) IsValid(errors *validate.Errors) {
 
 // List returns all the customers
 func (c *Customers) List(tx *pop.Connection) error {
-	return tx.All(c)
+	return tx.Select("id", "name", "email").All(c)
 }
 
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
