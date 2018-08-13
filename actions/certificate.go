@@ -29,7 +29,7 @@ func (cr CertificateActions) ListCertificate(c buffalo.Context) error {
 		temp := false
 		active = &temp
 	} else if len(c.Param("active")) > 0 {
-		msg := "value of active param is not recognized"
+		msg := "value of active param is should be true, false or empty (to display every certificate)"
 		return c.Render(400, r.JSON(&msg))
 	}
 	err := certificate.ListCertificate(tx, uid, active)
@@ -37,4 +37,31 @@ func (cr CertificateActions) ListCertificate(c buffalo.Context) error {
 		return c.Render(500, r.JSON(err))
 	}
 	return c.Render(200, r.JSON(certificate))
+}
+
+func (cr CertificateActions) UpdateStatus(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	if tx == nil {
+		err := "Database connection lost"
+		return c.Render(500, r.JSON(&err))
+	}
+
+	id := c.Param("cert_id")
+	if id == "" {
+		err := "Certificate id is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	active := c.Param("active")
+	var toActivate bool
+	if active == "true" {
+		toActivate = true
+	} else if active != "false" {
+		msg := "Needs active parameter as a true or false value only"
+		return c.Render(400, r.JSON(&msg))
+	}
+
+	cert := &models.Certificate{}
+
+	return cert.UpdateStatus(tx, id, toActivate)
 }

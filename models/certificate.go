@@ -33,3 +33,15 @@ func (c *Certificates) ListCertificate(tx *pop.Connection, customer_id string, a
 	}
 	return nil
 }
+
+func (c *Certificate) UpdateStatus(tx *pop.Connection, id string, active bool) error {
+
+	err := tx.Where("id::text = ?", id).First(c)
+	if err != nil {
+		return err
+	}
+	newCert := c
+	newCert.Activated = active
+	_, err := tx.ValidateAndUpdate(newCert, "id", "customer_id", "created_at")
+	return err
+}

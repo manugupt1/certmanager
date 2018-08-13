@@ -26,7 +26,6 @@ func App() *buffalo.App {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
 			SessionName: "_certmanager_session",
-			LooseSlash:  true,
 		})
 		// Automatically redirect to SSL
 		app.Use(forceSSL())
@@ -61,7 +60,8 @@ func App() *buffalo.App {
 		certGroup := app.Group("/certificate")
 		certHandler := &CertificateActions{}
 		certGroup.Use(middleware.SetContentType("application/json"))
-		certGroup.GET("{uid}/list", certHandler.ListCertificate)
+		certGroup.GET("/customer/{uid}", certHandler.ListCertificate)
+		certGroup.PATCH("/{cert_id}/activate", certHandler.UpdateStatus)
 
 		// certGroup.POST("/certificate/create", nil)
 		// certGroup.PATCH("/certificate/activate", nil)
