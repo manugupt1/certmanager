@@ -60,10 +60,9 @@ func App() *buffalo.App {
 		certGroup := app.Group("/certificate")
 		certHandler := &CertificateActions{}
 		certGroup.Use(middleware.SetContentType("application/json"))
-		certGroup.GET("/customer/{uid}", certHandler.ListCertificate)
+		certGroup.GET("/{cust_id}/list", certHandler.ListCertificate)
 		certGroup.PATCH("/{cert_id}/activate", certHandler.UpdateStatus)
-
-		// certGroup.POST("/certificate/create", nil)
+		certGroup.POST("/{cust_id}/create", certHandler.CreateCertificate)
 		// certGroup.PATCH("/certificate/activate", nil)
 		// certGroup.PATCH("/certificate/deactivate", nil)
 

@@ -87,3 +87,7 @@ func (c *Customer) Delete(tx *pop.Connection) error {
 	tx.Destroy(c)
 	return nil
 }
+
+func (c *Customer) Find(tx *pop.Connection, id string) error {
+	return tx.Find(c, id)
+}

@@ -7,11 +7,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// import (
-// 	"github.com/gobuffalo/buffalo"
-// 	"github.com/manugupt1/certmanager/models"
-// )
-
 type CustomerActions struct{}
 
 // Create is the handler that will create a new user if the user does not exist and validations pass

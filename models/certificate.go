@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gobuffalo/pop"
@@ -42,6 +43,25 @@ func (c *Certificate) UpdateStatus(tx *pop.Connection, id string, active bool) e
 	}
 	newCert := c
 	newCert.Activated = active
-	_, err := tx.ValidateAndUpdate(newCert, "id", "customer_id", "created_at")
+	_, err = tx.ValidateAndUpdate(newCert, "id", "customer_id", "created_at")
 	return err
+}
+
+func (c *Certificate) Create(tx *pop.Connection, cust_id string) error {
+	customer := &Customer{}
+	err := customer.Find(tx, cust_id)
+	if err != nil {
+		return err
+	}
+
+	cert_id, err := uuid.NewV4()
+	if err != nil {
+		return err
+	}
+	c.ID = cert_id
+	c.CustomerID = customer.ID
+	c.Activated = true
+	_, err = tx.ValidateAndCreate(c)
+	fmt.Println(err)
+	return nil
 }

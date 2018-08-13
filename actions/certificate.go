@@ -15,7 +15,7 @@ func (cr CertificateActions) ListCertificate(c buffalo.Context) error {
 		return c.Render(500, r.JSON(&err))
 	}
 	certificate := &models.Certificates{}
-	uid := c.Param("uid")
+	uid := c.Param("cust_id")
 	if uid == "" {
 		err := "User id cannot be empty"
 		return c.Render(400, r.JSON(&err))
@@ -64,4 +64,21 @@ func (cr CertificateActions) UpdateStatus(c buffalo.Context) error {
 	cert := &models.Certificate{}
 
 	return cert.UpdateStatus(tx, id, toActivate)
+}
+
+func (cr CertificateActions) CreateCertificate(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	if tx == nil {
+		err := "Database connection lost"
+		return c.Render(500, r.JSON(&err))
+	}
+
+	id := c.Param("cust_id")
+	if id == "" {
+		err := "Customer id is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	cert := &models.Certificate{}
+	return cert.Create(tx, id)
 }
