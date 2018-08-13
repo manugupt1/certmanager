@@ -1,7 +1,24 @@
 
 
-import {Post, Delete} from './requests.js';
+import {Get, Post, Delete} from './requests.js';
 import {updateStatus} from './status.js';
+
+export function get_customer() {
+  Get("/customer/list")
+    .then((response) => {
+      response.json().then((data) => {
+        for (let row of data) {
+          const el = "<tr>" 
+            + "<td>" + row.name + "</td>"
+            + "<td>" + row.email + "</td>"
+            + "<td>" + "</td>"
+            + "</tr>";
+          $("#customer_rows").prepend(el)
+        }
+
+      })
+    })
+}
 
 export function add_customer() {
   const customer = {
@@ -16,7 +33,7 @@ export function add_customer() {
     alert("Make sure that passwords match or are not empty")
   }
 
-  post("/customer/create", customer)
+  Post("/customer/create", customer)
   .then((response) => {
     const status = response.status;
     if (status == 200) {
