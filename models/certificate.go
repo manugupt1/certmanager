@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 )
 
@@ -18,3 +19,17 @@ type Certificate struct {
 
 // Certificates is not required by pop and may be deleted
 type Certificates []Certificate
+
+func (c *Certificates) ListCertificate(tx *pop.Connection, customer_id string, active *bool) error {
+	var err error
+	if active == nil {
+		err = tx.Where("customer_id::text = ?", customer_id).All(c)
+	} else {
+		err = tx.Where("customer_id::text = ? AND activated = ?", customer_id, *active).All(c)
+	}
+
+	if err != nil {
+		return err
+	}
+	return nil
+}

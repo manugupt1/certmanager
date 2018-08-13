@@ -49,18 +49,23 @@ func App() *buffalo.App {
 
 		app.GET("/", HomeHandler)
 
-		g := app.Group("/customer")
+		custGroup := app.Group("/customer")
 		custHandler := &CustomerActions{}
+		custGroup.Use(middleware.SetContentType("application/json"))
 
-		g.Use(middleware.SetContentType("application/json"))
+		custGroup.POST("/create", custHandler.Create)
+		custGroup.GET("/list", custHandler.List)
+		custGroup.DELETE("/delete", custHandler.Delete)
+		// custGroup.GET("/{id}/certificate/list", custHandler.ListCertificate)
 
-		g.POST("/create", custHandler.Create)
-		g.GET("/list", custHandler.List)
-		g.DELETE("/delete", custHandler.Delete)
-		g.POST("/certificate/create", nil)
-		g.GET("/{id}/certificate/list", custHandler.ListCertificate)
-		g.POST("/certificate/activate", nil)
-		g.POST("/certificate/deactivate", nil)
+		certGroup := app.Group("/certificate")
+		certHandler := &CertificateActions{}
+		certGroup.Use(middleware.SetContentType("application/json"))
+		certGroup.GET("{uid}/list", certHandler.ListCertificate)
+
+		// certGroup.POST("/certificate/create", nil)
+		// certGroup.PATCH("/certificate/activate", nil)
+		// certGroup.PATCH("/certificate/deactivate", nil)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

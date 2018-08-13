@@ -87,12 +87,3 @@ func (c *Customer) Delete(tx *pop.Connection) error {
 	tx.Destroy(c)
 	return nil
 }
-
-func (c *Customer) ListCertificate(tx *pop.Connection) error {
-	err := tx.Load(c, "Certificates")
-	// err := tx.RawQuery("select * from customers inner join certificates ON customers.id = certificates.customer_id").All(c)
-	if err != nil {
-		return err
-	}
-	return nil
-}

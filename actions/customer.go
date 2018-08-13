@@ -3,7 +3,6 @@ package actions
 import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
-	"github.com/gobuffalo/uuid"
 	"github.com/manugupt1/certmanager/models"
 	"github.com/pkg/errors"
 )
@@ -72,24 +71,4 @@ func (cr CustomerActions) Delete(c buffalo.Context) error {
 		return c.Render(422, r.JSON(&errMsg))
 	}
 	return c.Render(200, nil)
-}
-
-func (cr CustomerActions) ListCertificate(c buffalo.Context) error {
-	tx := c.Value("tx").(*pop.Connection)
-	if tx == nil {
-		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
-	}
-	customer := &models.Customer{}
-
-	id, err := uuid.FromString(c.Param("id"))
-	customer.ID = id
-
-	if err != nil {
-		err := "id not recognized"
-		return c.Render(400, r.JSON(&err))
-	}
-
-	err = customer.ListCertificate(tx)
-	return c.Render(200, r.JSON(customer))
 }
