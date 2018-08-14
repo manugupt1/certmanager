@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+	"os/exec"
+	"path/filepath"
 	"time"
 
 	"github.com/gobuffalo/pop"
@@ -37,31 +39,50 @@ func (c *Certificates) ListCertificate(tx *pop.Connection, customer_id string, a
 
 func (c *Certificate) UpdateStatus(tx *pop.Connection, id string, active bool) error {
 
-	err := tx.Where("id::text = ?", id).First(c)
+	err := tx.Find(c, "068a27c2-1851-4367-aa51-813e7644ec23")
 	if err != nil {
 		return err
 	}
-	newCert := c
-	newCert.Activated = active
-	_, err = tx.ValidateAndUpdate(newCert, "id", "customer_id", "created_at")
+
+	c.Activated = active
+	v, err := tx.ValidateAndUpdate(c, "id", "customer_id", "created_at")
+	if v.HasAny() {
+		fmt.Println(v.Errors)
+	}
 	return err
 }
 
 func (c *Certificate) Create(tx *pop.Connection, cust_id string) error {
-	customer := &Customer{}
-	err := customer.Find(tx, cust_id)
-	if err != nil {
-		return err
-	}
+	// customer := &Customer{}
+	// err := customer.Find(tx, cust_id)
+	// if err != nil {
+	// 	return err
+	// }
 
-	cert_id, err := uuid.NewV4()
+	certID, err := uuid.NewV4()
 	if err != nil {
 		return err
 	}
-	c.ID = cert_id
-	c.CustomerID = customer.ID
-	c.Activated = true
-	_, err = tx.ValidateAndCreate(c)
-	fmt.Println(err)
+	// c.ID = certID
+	// c.CustomerID = customer.ID
+	// c.Activated = true
+	// v, err := tx.ValidateAndCreate(c)
+
+	tx.RawQuery("INSERT INTO certificates (id, customer_id, created_at, updated_at, activated) VALUES(?, ?, ?, ?, ?)", certID, "068a27c2-1851-4367-aa51-813e7644ecb7", time.Now(), time.Now(), false).All(&c)
+	// fmt.Println(v.Erroxrs, err)
+	// newCertificate(c.ID.String())
+	return nil
+}
+
+func newCertificate(id string) error {
+	const path = "./certificates"
+	const cmd = "openssl"
+	id = filepath.Join(path, id)
+	opts := []string{"req", "-nodes", "-newkey", "rsa:2048", "-keyout", id + ".key", "-out", id + ".csr", "-subj", "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"}
+	cmdObj := exec.Command(cmd, opts...)
+	_, err := cmdObj.CombinedOutput()
+	if err != nil {
+		return err
+	}
 	return nil
 }
