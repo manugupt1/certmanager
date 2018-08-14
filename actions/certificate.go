@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"strconv"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/manugupt1/certmanager/models"
@@ -46,9 +48,9 @@ func (cr CertificateActions) UpdateStatus(c buffalo.Context) error {
 		return c.Render(500, r.JSON(&err))
 	}
 
-	id := c.Param("cert_id")
-	if id == "" {
-		err := "Certificate id is required"
+	id, err := strconv.Atoi(c.Param("cert_id"))
+	if err != nil {
+		err := "Certificate id is required and it needs to be an integer"
 		return c.Render(400, r.JSON(&err))
 	}
 
@@ -63,7 +65,11 @@ func (cr CertificateActions) UpdateStatus(c buffalo.Context) error {
 
 	cert := &models.Certificate{}
 
-	return cert.UpdateStatus(tx, id, toActivate)
+	err = cert.UpdateStatus(tx, id, toActivate)
+	if err != nil {
+		return c.Render(400, r.JSON(err.Error()))
+	}
+	return nil
 }
 
 func (cr CertificateActions) CreateCertificate(c buffalo.Context) error {
@@ -79,6 +85,12 @@ func (cr CertificateActions) CreateCertificate(c buffalo.Context) error {
 		return c.Render(400, r.JSON(&err))
 	}
 
-	cert := &models.Certificate{}
-	return cert.Create(tx, id)
+	certificate := &models.Certificate{}
+	err := certificate.CreateCertificate(tx, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

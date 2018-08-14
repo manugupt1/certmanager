@@ -9,13 +9,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gobuffalo/pop"
-	"github.com/gobuffalo/uuid"
 )
 
 // Customer model is the reflection of table column 'customers' in the database
 // It implements queries that return single result or when results are to be created / updated / deleted.
 type Customer struct {
-	ID           uuid.UUID    `json:"id" db:"id"`
+	ID           int          `json:"id" db:"id"`
 	CreatedAt    time.Time    `db:"created_at"`
 	UpdatedAt    time.Time    `db:"updated_at"`
 	Name         string       `json:"name,omitempty" db:"name"`
@@ -61,11 +60,6 @@ func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (c *Customer) BeforeCreate(tx *pop.Connection) error {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	c.ID = id
 	hash, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return errors.WithStack(err)

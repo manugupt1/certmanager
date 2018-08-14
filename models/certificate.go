@@ -7,17 +7,16 @@ import (
 	"time"
 
 	"github.com/gobuffalo/pop"
-	"github.com/gobuffalo/uuid"
 )
 
 // Certificate is the model that defines certificate and indicates if it is active or not
 type Certificate struct {
-	ID         uuid.UUID `json:"id" db:"id"`
+	ID         int       `json:"id" db:"id"`
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 	Activated  bool      `json:"activated" db:"activated"`
 	Customer   Customer  `belongs_to:"customer"`
-	CustomerID uuid.UUID `db:"customer_id"`
+	CustomerID int       `db:"customer_id"`
 }
 
 // Certificates is not required by pop and may be deleted
@@ -37,40 +36,22 @@ func (c *Certificates) ListCertificate(tx *pop.Connection, customer_id string, a
 	return nil
 }
 
-func (c *Certificate) UpdateStatus(tx *pop.Connection, id string, active bool) error {
-
-	err := tx.Find(c, "068a27c2-1851-4367-aa51-813e7644ec23")
+func (c *Certificate) UpdateStatus(tx *pop.Connection, id int, toActivate bool) error {
+	query := `UPDATE certificates SET activated = $1, updated_at = $2 WHERE id=$3`
+	r, err := SQL.Exec(query, toActivate, time.Now(), id)
+	fmt.Println("here", r, err)
 	if err != nil {
 		return err
 	}
-
-	c.Activated = active
-	v, err := tx.ValidateAndUpdate(c, "id", "customer_id", "created_at")
-	if v.HasAny() {
-		fmt.Println(v.Errors)
-	}
-	return err
+	return nil
 }
 
-func (c *Certificate) Create(tx *pop.Connection, cust_id string) error {
-	// customer := &Customer{}
-	// err := customer.Find(tx, cust_id)
-	// if err != nil {
-	// 	return err
-	// }
-
-	certID, err := uuid.NewV4()
+func (c *Certificate) CreateCertificate(tx *pop.Connection, cust_id string) error {
+	query := `INSERT INTO certificates (activated, created_at, customer_id, updated_at) VALUES ($1, $2, $3, $4)`
+	_, err := SQL.Exec(query, true, time.Now(), 1, time.Now())
 	if err != nil {
 		return err
 	}
-	// c.ID = certID
-	// c.CustomerID = customer.ID
-	// c.Activated = true
-	// v, err := tx.ValidateAndCreate(c)
-
-	tx.RawQuery("INSERT INTO certificates (id, customer_id, created_at, updated_at, activated) VALUES(?, ?, ?, ?, ?)", certID, "068a27c2-1851-4367-aa51-813e7644ecb7", time.Now(), time.Now(), false).All(&c)
-	// fmt.Println(v.Erroxrs, err)
-	// newCertificate(c.ID.String())
 	return nil
 }
 
