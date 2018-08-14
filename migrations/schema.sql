@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.4 (Debian 10.4-2.pgdg90+1)
+-- Dumped from database version 9.6.10
 -- Dumped by pg_dump version 10.4
 
 SET statement_timeout = 0;
@@ -38,9 +38,9 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.certificates (
-    id uuid NOT NULL,
-    activated boolean DEFAULT false,
-    customer_id uuid,
+    id integer NOT NULL,
+    activated boolean,
+    customer_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -49,11 +49,32 @@ CREATE TABLE public.certificates (
 ALTER TABLE public.certificates OWNER TO postgres;
 
 --
+-- Name: certificates_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.certificates_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.certificates_id_seq OWNER TO postgres;
+
+--
+-- Name: certificates_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.certificates_id_seq OWNED BY public.certificates.id;
+
+
+--
 -- Name: customers; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.customers (
-    id uuid NOT NULL,
+    id integer NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
@@ -65,6 +86,27 @@ CREATE TABLE public.customers (
 ALTER TABLE public.customers OWNER TO postgres;
 
 --
+-- Name: customers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.customers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.customers_id_seq OWNER TO postgres;
+
+--
+-- Name: customers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.customers_id_seq OWNED BY public.customers.id;
+
+
+--
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -74,6 +116,20 @@ CREATE TABLE public.schema_migration (
 
 
 ALTER TABLE public.schema_migration OWNER TO postgres;
+
+--
+-- Name: certificates id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.certificates ALTER COLUMN id SET DEFAULT nextval('public.certificates_id_seq'::regclass);
+
+
+--
+-- Name: customers id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customers ALTER COLUMN id SET DEFAULT nextval('public.customers_id_seq'::regclass);
+
 
 --
 -- Name: certificates certificates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
