@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -38,8 +37,7 @@ func (c *Certificates) ListCertificate(tx *pop.Connection, customer_id string, a
 
 func (c *Certificate) UpdateStatus(tx *pop.Connection, id int, toActivate bool) error {
 	query := `UPDATE certificates SET activated = $1, updated_at = $2 WHERE id=$3`
-	r, err := SQL.Exec(query, toActivate, time.Now(), id)
-	fmt.Println("here", r, err)
+	_, err := SQL.Exec(query, toActivate, time.Now(), id)
 	if err != nil {
 		return err
 	}
