@@ -11,6 +11,8 @@ import (
 	"github.com/gobuffalo/pop"
 )
 
+const path = "./certificates"
+
 // Certificate is the model that defines certificate and indicates if it is active or not
 type Certificate struct {
 	ID         int       `json:"id" db:"id"`
@@ -57,17 +59,17 @@ func (c *Certificate) CreateCertificate(tx *pop.Connection, custID string) error
 		return err
 	}
 
-	// Add metadata in DB
-	dbErr := addCertificateMeta(ctx, custID)
-
 	// Create a key in the fs
-	_, fsErr := newCertificate(ctx)
+	fsKey, fsBody, fsErr := newCertificate(ctx)
 
 	// If there is a error, call cancel to rollback certTx
 	if fsErr != nil {
 		cancel()
 		return fsErr
 	}
+
+	// Add metadata in DB
+	dbErr := addCertificateMeta(ctx, custID, fsKey, fsBody)
 	if dbErr != nil {
 		cancel()
 		return dbErr
@@ -83,26 +85,25 @@ func (c *Certificate) CreateCertificate(tx *pop.Connection, custID string) error
 
 }
 
-func newCertificate(ctx context.Context) (string, error) {
-	const path = "./certificates"
+func newCertificate(ctx context.Context) (string, string, error) {
 	const cmd = "openssl"
 	certName, err := uuid.NewV4()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	fPath := filepath.Join(path, certName.String())
 	opts := []string{"req", "-nodes", "-newkey", "rsa:2048", "-keyout", fPath + ".key", "-out", fPath + ".csr", "-subj", "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"}
 	cmdObj := exec.Command(cmd, opts...)
 	_, err = cmdObj.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return certName.String(), nil
+	return certName.String() + ".key", certName.String() + ".csr", nil
 }
 
-func addCertificateMeta(ctx context.Context, custID string) error {
-	query := `INSERT INTO certificates (activated, created_at, customer_id, updated_at) VALUES ($1, $2, $3, $4)`
-	_, err := SQL.Exec(query, true, time.Now(), custID, time.Now())
+func addCertificateMeta(ctx context.Context, custID string, key, body string) error {
+	query := `INSERT INTO certificates (activated, created_at, customer_id, updated_at, key_path, body_path) VALUES ($1, $2, $3, $4, $5, $6)`
+	_, err := SQL.Exec(query, true, time.Now(), custID, time.Now(), key, body)
 	if err != nil {
 		return err
 	}

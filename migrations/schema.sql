@@ -42,7 +42,9 @@ CREATE TABLE public.certificates (
     activated boolean,
     customer_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    key_path character varying(255) NOT NULL,
+    body_path character varying(255) NOT NULL
 );
 
 
