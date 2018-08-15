@@ -7,6 +7,10 @@ export function get_customer() {
   Get("/customer/list")
     .then((response) => {
       response.json().then((data) => {
+        let custRows = document.getElementById("#customer_rows");
+        if (custRows) {
+          custRows.innerText = "";
+        }
         for (let row of data) {
           const el = "<tr>" 
             + "<td>" + row.name + "</td>"
@@ -15,7 +19,6 @@ export function get_customer() {
             + "</tr>";
           $("#customer_rows").prepend(el)
         }
-
       })
     })
 }
@@ -37,7 +40,8 @@ export function add_customer() {
   .then((response) => {
     const status = response.status;
     if (status == 200) {
-      updateStatus("Customer created successfully!")
+      updateStatus("Customer created successfully!");
+      get_customer();
     } else if (status == 422) {
       response.json()
         .then((data) => {
@@ -60,6 +64,18 @@ export function delete_customer() {
     updateStatus("Needs an email to be entered")
   }
   Delete("/customer/delete", {email: email})
+  .then((response) => {
+    const status = response.status;
+    if (status == 200) {
+      updateStatus("Customer deleted successfully!");
+      get_customer();
+    } else if (status == 422) {
+      response.json()
+        .then((data) => {
+          updateStatus(data);
+        });
+    }
+  })
   .catch(error => console.error(`Fetch Error =\n`, error));
 
 
