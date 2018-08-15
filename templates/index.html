@@ -1,42 +1,31 @@
-<header>
-    <div class="row">
-      <div class="col-md-9 col-sm-9 col-xs-10 mx-auto">
-        <h1 class="titles"><%= t("company") %></h1>
-      </div>
-      <div class="col-md-9 col-sm-9 col-xs-10 mx-auto">
-          <h1 class="titles underline"><%= t("product") %></h1>
-      </div>
-    </div>
-</header>
 
+<div class="row" id="customer_table">
+  <table class="table table-striped">
+    <thead id="customer_titles">
+      <tr>
+        <th scope="col">
+          <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#addCustomer">
+            <%= t("add_customer") %>
+          </button>
+        </th>
+        <th scope="col">
+          <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteCustomer">
+            <%= t("delete_customer") %>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <thead id="customer_titles">
+      <tr>
+        <th scope="col">Customer Name</th>
+        <th scope="col">Email</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody id="customer_rows">
 
-<div id="status">
-
-</div>
-
-
-<div class="container mt-4">
-  <div class="row mx-auto p-2">
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#addCustomer"><%= t("add_customer") %></button>
-  </div>
-  <div class="row mx-auto p-2">
-      <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteCustomer"><%= t("delete_customer") %></button>
-  </div>
-
-  <div class="row" id="customer_table">
-      <table class="table table-striped">
-          <thead id="customer_titles">
-            <tr>
-              <th scope="col">Customer Name</th>
-              <th scope="col">Email</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="customer_rows">
-
-          </tbody>
-        </table>
-  </div>
+    </tbody>
+  </table>
 </div>
 
 
@@ -53,10 +42,10 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <input type="text" class="form-control" id="add_cust_name" placeholder="Customer Name"/>
-          <input type="text" class="form-control" id="add_cust_email" placeholder="Email"/>
-          <input type="password" class="form-control" id="password1" placeholder="Password"/>
-          <input type="password" class="form-control" id="password2" placeholder="Re-enter password"/>
+          <input type="text" class="form-control" id="add_cust_name" placeholder="Customer Name" />
+          <input type="text" class="form-control" id="add_cust_email" placeholder="Email" />
+          <input type="password" class="form-control" id="password1" placeholder="Password" />
+          <input type="password" class="form-control" id="password2" placeholder="Re-enter password" />
         </div>
       </div>
       <div class="modal-footer">
@@ -69,25 +58,25 @@
 
 <!-- Delete Customer Modal-->
 <div class="modal fade" id="deleteCustomer" tabindex="-1" role="dialog" aria-labelledby="deleteCustomerLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteCustomerLabel">Delete Customer</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCustomerLabel">Delete Customer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <input type="text" class="form-control" id="delete_cust_email" placeholder="Email" />
         </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <input type="text" class="form-control" id="delete_cust_email" placeholder="Email"/>
-          </div>
-          <div class="text-danger text-capitalize text-sm">
-            Deleting the customer will remove all certificates for the customer
-          </div>
+        <div class="text-danger text-capitalize text-sm">
+          Deleting the customer will remove all certificates for the customer
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="delete_customer">Delete Customer</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="delete_customer">Delete Customer</button>
       </div>
     </div>
   </div>
+</div>

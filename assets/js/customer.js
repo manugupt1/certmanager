@@ -12,10 +12,11 @@ export function get_customer() {
           custRows.innerText = "";
         }
         for (let row of data) {
-          const el = "<tr>" 
+          console.log(row.id)
+          const el = "<tr>"
             + "<td>" + row.name + "</td>"
             + "<td>" + row.email + "</td>"
-            + "<td>" + "</td>"
+            + "<td><a href='cert?active=true&cust_id="+ row.id + "'>View active certificates</a></td>"
             + "</tr>";
           $("#customer_rows").prepend(el)
         }
