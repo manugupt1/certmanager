@@ -19,6 +19,8 @@ type Certificate struct {
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 	Activated  bool      `json:"activated" db:"activated"`
+	KeyPath    string    `json:"key_path" db:"key_path"`
+	BodyPath   string    `json:"body_path" db:"body_path"`
 	Customer   Customer  `belongs_to:"customer"`
 	CustomerID int       `db:"customer_id"`
 }

@@ -1,5 +1,6 @@
 
 
+
 import {Get, Post, Delete} from './requests.js';
 import {updateStatus} from './status.js';
 
@@ -12,7 +13,6 @@ export function get_customer() {
           custRows.innerText = "";
         }
         for (let row of data) {
-          console.log(row.id)
           const el = "<tr>"
             + "<td>" + row.name + "</td>"
             + "<td>" + row.email + "</td>"

@@ -6,6 +6,25 @@ $('#certificates').ready(() => {
 });
 
 function get_active_cert() {
+  Get("/certificate/list"+window.location.search)
+  .then((response) => {
+    response.json()
+      .then((data) => {
+        let certRows = document.getElementById("#certificate_rows");
+        if (certRows) {
+          certRows.innerText = "";
+        }
+        for (let row of data) {
+          const el = "<tr>"
+            + "<td>" + row.id + "</td>"
+            + "<td>" + row.key_path + "</td>"
+            + "<td>" + row.body_path + "</td>"
+            + "<td><a>Deactivate</a></td>"
+            + "</tr>";
+          $("#certificate_rows").prepend(el)
+        }
+      });
+  })
   console.log("get active cert");
 }
 
