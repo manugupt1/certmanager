@@ -91,6 +91,48 @@ func (cr CertificateActions) CreateCertificate(c buffalo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func (cr CertificateActions) DownloadKey(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	if tx == nil {
+		err := "Database connection lost"
+		return c.Render(500, r.JSON(&err))
+	}
+
+	id := c.Param("key_id")
+	if id == "" {
+		err := "key_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	cert := &models.Certificate{}
+	keydata, err := cert.DownloadKey(tx, id)
+	if err != nil {
+		return c.Render(500, r.JSON(&err))
+	}
+	return c.Render(200, r.JSON(keydata))
+}
+
+func (cr CertificateActions) DownloadBody(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	if tx == nil {
+		err := "Database connection lost"
+		return c.Render(500, r.JSON(&err))
+	}
+
+	id := c.Param("body_id")
+	if id == "" {
+		err := "body_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	cert := &models.Certificate{}
+	bodydata, err := cert.DownloadBody(tx, id)
+	if err != nil {
+		return c.Render(500, r.JSON(&err))
+	}
+	return c.Render(200, r.JSON(bodydata))
+
 }

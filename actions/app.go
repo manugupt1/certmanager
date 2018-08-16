@@ -56,7 +56,6 @@ func App() *buffalo.App {
 		custGroup.POST("/create", custHandler.Create)
 		custGroup.GET("/list", custHandler.List)
 		custGroup.DELETE("/delete", custHandler.Delete)
-		// custGroup.GET("/{id}/certificate/list", custHandler.ListCertificate)
 
 		certGroup := app.Group("/certificate")
 		certHandler := &CertificateActions{}
@@ -64,8 +63,8 @@ func App() *buffalo.App {
 		certGroup.GET("/list", certHandler.ListCertificate)
 		certGroup.PATCH("/{cert_id}/update", certHandler.UpdateStatus)
 		certGroup.POST("/{cust_id}/create", certHandler.CreateCertificate)
-		// certGroup.PATCH("/certificate/activate", nil)
-		// certGroup.PATCH("/certificate/deactivate", nil)
+		certGroup.GET("/key/{key_id}", certHandler.DownloadKey)
+		certGroup.GET("/body/{body_id}", certHandler.DownloadBody)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

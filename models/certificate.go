@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"errors"
+	"io/ioutil"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -85,6 +87,36 @@ func (c *Certificate) CreateCertificate(tx *pop.Connection, custID string) error
 	}
 	return nil
 
+}
+
+func (c *Certificate) DownloadKey(tx *pop.Connection, key_id string) (string, error) {
+	err := tx.Where("key_path = ?", key_id).First(c)
+	if err != nil {
+		return "", err
+	}
+	if c.Activated == false {
+		return "", errors.New("Key has been deactivated")
+	}
+	b, err := ioutil.ReadFile(filepath.Join(path, key_id))
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func (c *Certificate) DownloadBody(tx *pop.Connection, body_id string) (string, error) {
+	err := tx.Where("body_path = ?", body_id).First(c)
+	if err != nil {
+		return "", err
+	}
+	if c.Activated == false {
+		return "", errors.New("Key has been deactivated")
+	}
+	b, err := ioutil.ReadFile(filepath.Join(path, body_id))
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }
 
 func newCertificate(ctx context.Context) (string, string, error) {
