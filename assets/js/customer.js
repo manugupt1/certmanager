@@ -53,8 +53,6 @@ export function add_customer() {
     }
   }) // parses response to JSON
   .catch(error => console.error(`Fetch Error =\n`, error));
-
-
   $('#addCustomer').modal('hide')
 }
 
