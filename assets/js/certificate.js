@@ -3,14 +3,18 @@ import {updateStatus} from './status.js';
 import { download } from './download.js';
 
 $('#certificates').ready(() => {
-  // debugger;
+  $('#create_cert').click(function () {
+    create_cert();
+  })
   get_active_cert();
 });
 
 
 function get_active_cert() {
+  console.log("here", window.location.search)
   Get("/certificate/list"+window.location.search)
   .then((response) => {
+    console.log(response.status)
     response.json()
       .then((data) => {
         let certRows = document.getElementById("certificate_rows");
@@ -39,7 +43,26 @@ function get_active_cert() {
 }
 
 function create_cert() {
-
+  const url = new URL(window.location.href)
+  const cust_id = url.searchParams.get('cust_id')
+  if (!cust_id || isNaN(cust_id)) {
+    updateStatus("cust_id can't be empty and must be an integer")
+    return;
+  }
+  const createURL = "/certificate/" + cust_id + "/create"
+  Post(createURL)
+    .then((response) => {
+      const status = response.status;
+      if (status == 200) {
+        updateStatus("Certificate successfully created!");
+        get_active_cert();
+      } else {
+        response.json()
+          .then((data) => {
+            updateStatus(data);
+          });
+      }
+    })
 }
 
 function download_key() {
