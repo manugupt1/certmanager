@@ -10,11 +10,39 @@ $('#certificates').ready(() => {
 });
 
 
+
+function render_action_button(row) {
+  if (row.activated != true) {
+    return "<td id='"+row.id+"'><a href='#'>Activate</a></td>"
+  }
+  return "<td id='"+row.id+"'><a href='#'>Deactivate</a></td>"
+}
+
+function attach_action_listener(row) {
+  const url = new URL(window.location.href)
+  const cust_id = url.searchParams.get('cust_id')
+  let el = document.getElementById(row.id);
+  if (row.activated) {
+    el.addEventListener('click', () => {
+      update_cert(cust_id, row.id, false);
+    })
+  } else {
+    el.addEventListener('click', () => {
+      update_cert(cust_id, row.id, true);
+    });
+  }
+
+}
+
 function get_active_cert() {
-  console.log("here", window.location.search)
-  Get("/certificate/list"+window.location.search)
+  const url = new URL(window.location.href)
+  const cust_id = url.searchParams.get('cust_id')
+  Get("/certificate/"+cust_id)
   .then((response) => {
-    console.log(response.status)
+    if (response.status != 200) {
+      updateStatus("Some error occured!")
+      return;
+    }
     response.json()
       .then((data) => {
         let certRows = document.getElementById("certificate_rows");
@@ -26,17 +54,19 @@ function get_active_cert() {
             + "<td>" + row.id + "</td>"
             + "<td id='"+row.key_path+"'><a href='#'>" + row.key_path + "</a></td>"
             + "<td id='"+row.body_path+"'><a href='#'>" + row.body_path + "</a></td>"
-            + "<td id='"+row.id+"'><a href='#'>Deactivate</a></td>"
+            + render_action_button(row);
             + "</tr>";
           $("#certificate_rows").prepend(el);
-          let deactEl = document.getElementById(row.id);
-          deactEl.addEventListener('click', deactivate_cert.bind({cert_id: row.id}));
-
+          attach_action_listener(row)
           let keyDownloadEl = document.getElementById(row.key_path);
-          keyDownloadEl.addEventListener('click', download_key.bind({key: row.key_path}));
+          keyDownloadEl.addEventListener('click', () => {
+            download_key(cust_id, row.id, row.key_path);
+          });
 
           let bodyDownloadEl = document.getElementById(row.body_path);
-          bodyDownloadEl.addEventListener('click', download_cert.bind({body: row.body_path}));
+          bodyDownloadEl.addEventListener('click', () => {
+            download_cert(cust_id, row.id, row.body_path);
+          });
         }
       });
   })
@@ -65,14 +95,14 @@ function create_cert() {
     })
 }
 
-function download_key() {
-  const url = "/certificate/key/" + this.key;
+function download_key(cust_id, cert_id, key) {
+  const url = "/certificate/" + cust_id + "/" + cert_id + "/key/" + key;
   Get(url).then((response) => {
     const status = response.status;
     if (status == 200) {
       response.json()
         .then((data) => {
-          download(this.key, data);
+          download(key, data);
         })
     } else {
       response.json()
@@ -83,14 +113,14 @@ function download_key() {
   })
 }
 
-function download_cert() {
-  const url = "/certificate/body/" + this.body;
+function download_cert(cust_id, cert_id, body) {
+  const url = "/certificate/" + cust_id + "/" + cert_id + "/body/" + body;
   Get(url).then((response) => {
     const status = response.status;
     if (status == 200) {
       response.json()
         .then((data) => {
-          download(this.body, data);
+          download(body, data);
         })
     } else {
       response.json()
@@ -102,8 +132,8 @@ function download_cert() {
 }
 
 
-function deactivate_cert() {
-  const url = "/certificate/" + this.cert_id + "/update?active=false";
+function update_cert(cust_id, cert_id, active) {
+  const url = "/certificate/" + cust_id + "/" + cert_id + "?active="+active;
   Patch(url)
     .then((response) => {
       const status = response.status;
@@ -118,3 +148,4 @@ function deactivate_cert() {
       }
     })
 }
+

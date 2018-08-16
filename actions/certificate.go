@@ -101,16 +101,29 @@ func (cr CertificateActions) DownloadKey(c buffalo.Context) error {
 		return c.Render(500, r.JSON(&err))
 	}
 
-	id := c.Param("key_id")
-	if id == "" {
-		err := "key_id  is required"
+	cert_id := c.Param("cert_id")
+	if cert_id == "" {
+		err := "cert_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	cust_id := c.Param("cust_id")
+	if cust_id == "" {
+		err := "cust_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	key_id := c.Param("key_id")
+	if key_id == "" {
+		err := "cust_id  is required"
 		return c.Render(400, r.JSON(&err))
 	}
 
 	cert := &models.Certificate{}
-	keydata, err := cert.DownloadKey(tx, id)
+	keydata, err := cert.DownloadKey(tx, cert_id, cust_id, key_id)
 	if err != nil {
-		return c.Render(500, r.JSON(&err))
+		errMsg := err.Error()
+		return c.Render(500, r.JSON(&errMsg))
 	}
 	return c.Render(200, r.JSON(keydata))
 }
@@ -122,16 +135,29 @@ func (cr CertificateActions) DownloadBody(c buffalo.Context) error {
 		return c.Render(500, r.JSON(&err))
 	}
 
-	id := c.Param("body_id")
-	if id == "" {
+	cert_id := c.Param("cert_id")
+	if cert_id == "" {
+		err := "cert_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	cust_id := c.Param("cust_id")
+	if cust_id == "" {
+		err := "cust_id  is required"
+		return c.Render(400, r.JSON(&err))
+	}
+
+	body_id := c.Param("body_id")
+	if body_id == "" {
 		err := "body_id  is required"
 		return c.Render(400, r.JSON(&err))
 	}
 
 	cert := &models.Certificate{}
-	bodydata, err := cert.DownloadBody(tx, id)
+	bodydata, err := cert.DownloadBody(tx, cust_id, cert_id, body_id)
 	if err != nil {
-		return c.Render(500, r.JSON(&err))
+		errMsg := err.Error()
+		return c.Render(500, r.JSON(&errMsg))
 	}
 	return c.Render(200, r.JSON(bodydata))
 

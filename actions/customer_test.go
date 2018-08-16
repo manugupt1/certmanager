@@ -39,3 +39,6 @@ func (as *ActionSuite) Test_CustomerList() {
 	res := as.JSON("/customer/list").Get()
 	as.Equal(200, res.Code)
 }
+
+// How to create an API
+//

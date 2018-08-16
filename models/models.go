@@ -16,7 +16,6 @@ var SQL *sql.DB
 func init() {
 	setPop()
 	setOther()
-
 }
 
 func setPop() {

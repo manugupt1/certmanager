@@ -5,10 +5,15 @@ import {Get, Post, Delete} from './requests.js';
 import {updateStatus} from './status.js';
 
 export function get_customer() {
-  Get("/customer/list")
+  Get("/customer")
     .then((response) => {
+      console.log(response)
+      if (response.status != 200) {
+        updateStatus("Some error occured!")
+        return;
+      }
       response.json().then((data) => {
-        let custRows = document.getElementById("#customer_rows");
+        let custRows = document.getElementById("customer_rows");
         if (custRows) {
           custRows.innerText = "";
         }
@@ -16,7 +21,7 @@ export function get_customer() {
           const el = "<tr>"
             + "<td>" + row.name + "</td>"
             + "<td>" + row.email + "</td>"
-            + "<td><a href='cert?active=true&cust_id="+ row.id + "'>View active certificates</a></td>"
+            + "<td><a href='cert?&cust_id="+ row.id + "'>View certificates</a></td>"
             + "</tr>";
           $("#customer_rows").prepend(el)
         }
@@ -37,7 +42,7 @@ export function add_customer() {
     alert("Make sure that passwords match or are not empty")
   }
 
-  Post("/customer/create", customer)
+  Post("/customer", customer)
   .then((response) => {
     const status = response.status;
     if (status == 200) {
@@ -62,7 +67,7 @@ export function delete_customer() {
   if (!email || email.length == 0) {
     updateStatus("Needs an email to be entered")
   }
-  Delete("/customer/delete", {email: email})
+  Delete("/customer/", {email: email})
   .then((response) => {
     const status = response.status;
     if (status == 200) {

@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/uuid"
 
 	"github.com/gobuffalo/pop"
 )
 
-const path = "./certificates"
+var path = envy.Get("CERTIFICATES_LOCATION", "./certificates")
 
 // Certificate is the model that defines certificate and indicates if it is active or not
 type Certificate struct {
@@ -89,23 +90,24 @@ func (c *Certificate) CreateCertificate(tx *pop.Connection, custID string) error
 
 }
 
-func (c *Certificate) DownloadKey(tx *pop.Connection, key_id string) (string, error) {
-	err := tx.Where("key_path = ?", key_id).First(c)
+func (c *Certificate) DownloadKey(tx *pop.Connection, cert_id, cust_id, key_id string) (string, error) {
+	err := tx.Where("id = ? AND customer_id = ? AND key_path = ?", cert_id, cust_id, key_id).First(c)
 	if err != nil {
 		return "", err
 	}
 	if c.Activated == false {
 		return "", errors.New("Key has been deactivated")
 	}
-	b, err := ioutil.ReadFile(filepath.Join(path, key_id))
+	keyID := c.KeyPath
+	b, err := ioutil.ReadFile(filepath.Join(path, keyID))
 	if err != nil {
 		return "", err
 	}
 	return string(b), nil
 }
 
-func (c *Certificate) DownloadBody(tx *pop.Connection, body_id string) (string, error) {
-	err := tx.Where("body_path = ?", body_id).First(c)
+func (c *Certificate) DownloadBody(tx *pop.Connection, cust_id, cert_id, body_id string) (string, error) {
+	err := tx.Where("customer_id = ? AND id = ? AND body_path = ?", cust_id, cert_id, body_id).First(c)
 	if err != nil {
 		return "", err
 	}
