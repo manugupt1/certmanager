@@ -113,7 +113,7 @@ func (c *Certificate) DownloadBody(tx *pop.Connection, cust_id, cert_id, body_id
 		return "", err
 	}
 	if c.Activated == false {
-		return "", errors.New("Key has been deactivated")
+		return "", errors.New("Certificate has been deactivated")
 	}
 	b, err := ioutil.ReadFile(filepath.Join(path, body_id))
 	if err != nil {
