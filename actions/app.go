@@ -51,20 +51,17 @@ func App() *buffalo.App {
 
 		custGroup := app.Group("/customer")
 		custHandler := &CustomerActions{}
-		custGroup.Use(middleware.SetContentType("application/json"))
+		certHandler := &CertificateActions{}
 
+		custGroup.Use(middleware.SetContentType("application/json"))
 		custGroup.GET("/", custHandler.List)
 		custGroup.POST("/", custHandler.Create)
 		custGroup.DELETE("/", custHandler.Delete)
-
-		certGroup := app.Group("/certificate")
-		certHandler := &CertificateActions{}
-		certGroup.Use(middleware.SetContentType("application/json"))
-		certGroup.GET("/{cust_id}", certHandler.ListCertificate)
-		certGroup.GET("/{cust_id}/{cert_id}/key/{key_id}", certHandler.DownloadKey)
-		certGroup.GET("/{cust_id}/{cert_id}/body/{body_id}", certHandler.DownloadBody)
-		certGroup.PATCH("/{cust_id}/{cert_id}", certHandler.UpdateStatus)
-		certGroup.POST("/{cust_id}", certHandler.CreateCertificate)
+		custGroup.GET("/{cust_id}/certificates", certHandler.ListCertificate)
+		custGroup.GET("/{cust_id}/certificate/{cert_id}/key", certHandler.DownloadKey)
+		custGroup.GET("/{cust_id}/certificate/{cert_id}/body", certHandler.DownloadBody)
+		custGroup.PATCH("/{cust_id}/certificate/{cert_id}", certHandler.UpdateStatus)
+		custGroup.POST("/{cust_id}/certificate", certHandler.CreateCertificate)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

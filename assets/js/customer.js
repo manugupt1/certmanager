@@ -7,7 +7,6 @@ import {updateStatus} from './status.js';
 export function get_customer() {
   Get("/customer")
     .then((response) => {
-      console.log(response)
       if (response.status != 200) {
         updateStatus("Some error occured!")
         return;

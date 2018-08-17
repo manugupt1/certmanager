@@ -15,8 +15,8 @@ import (
 // It implements queries that return single result or when results are to be created / updated / deleted.
 type Customer struct {
 	ID           int          `json:"id" db:"id"`
-	CreatedAt    time.Time    `db:"created_at"`
-	UpdatedAt    time.Time    `db:"updated_at"`
+	CreatedAt    time.Time    `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at" db:"updated_at"`
 	Name         string       `json:"name,omitempty" db:"name"`
 	Email        string       `json:"email,omitempty" db:"email"`
 	Password     string       `json:"password,omitempty" db:"password"`

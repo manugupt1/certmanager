@@ -2,6 +2,7 @@ import {Get, Post, Patch} from './requests.js';
 import {updateStatus} from './status.js';
 import { download } from './download.js';
 
+
 $('#certificates').ready(() => {
   $('#create_cert').click(function () {
     create_cert();
@@ -10,6 +11,15 @@ $('#certificates').ready(() => {
 });
 
 
+function get_cust_id() {
+  const url = new URL(window.location.href)
+  const cust_id = url.searchParams.get('cust_id')
+  if (!cust_id) {
+    updateStatus("Needs a customer id in the url")
+    throw "Needs a customer id in the url"
+  }
+  return cust_id;
+}
 
 function render_action_button(row) {
   if (row.activated != true) {
@@ -19,8 +29,7 @@ function render_action_button(row) {
 }
 
 function attach_action_listener(row) {
-  const url = new URL(window.location.href)
-  const cust_id = url.searchParams.get('cust_id')
+  let cust_id = get_cust_id();
   let el = document.getElementById(row.id);
   if (row.activated) {
     el.addEventListener('click', () => {
@@ -35,9 +44,8 @@ function attach_action_listener(row) {
 }
 
 function get_active_cert() {
-  const url = new URL(window.location.href)
-  const cust_id = url.searchParams.get('cust_id')
-  Get("/certificate/"+cust_id)
+  let cust_id = get_cust_id();
+  Get("/customer/"+cust_id + "/certificates")
   .then((response) => {
     if (response.status != 200) {
       updateStatus("Some error occured!")
@@ -73,13 +81,12 @@ function get_active_cert() {
 }
 
 function create_cert() {
-  const url = new URL(window.location.href)
-  const cust_id = url.searchParams.get('cust_id')
+  let cust_id = get_cust_id();
   if (!cust_id || isNaN(cust_id)) {
     updateStatus("cust_id can't be empty and must be an integer")
     return;
   }
-  const createURL = "/certificate/" + cust_id;
+  const createURL = "/customer/" + cust_id + "/certificate";
   Post(createURL)
     .then((response) => {
       const status = response.status;
@@ -96,7 +103,7 @@ function create_cert() {
 }
 
 function download_key(cust_id, cert_id, key) {
-  const url = "/certificate/" + cust_id + "/" + cert_id + "/key/" + key;
+  const url = "/customer/" + cust_id + "/certificate/" + cert_id + "/key"
   Get(url).then((response) => {
     const status = response.status;
     if (status == 200) {
@@ -114,7 +121,7 @@ function download_key(cust_id, cert_id, key) {
 }
 
 function download_cert(cust_id, cert_id, body) {
-  const url = "/certificate/" + cust_id + "/" + cert_id + "/body/" + body;
+  const url = "/customer/" + cust_id + "/certificate/" + cert_id + "/body";
   Get(url).then((response) => {
     const status = response.status;
     if (status == 200) {
@@ -133,7 +140,7 @@ function download_cert(cust_id, cert_id, body) {
 
 
 function update_cert(cust_id, cert_id, active) {
-  const url = "/certificate/" + cust_id + "/" + cert_id + "?active="+active;
+  const url = "/customer/" + cust_id + "/certificate/" + cert_id + "?active="+active;
   Patch(url)
     .then((response) => {
       const status = response.status;

@@ -113,14 +113,8 @@ func (cr CertificateActions) DownloadKey(c buffalo.Context) error {
 		return c.Render(400, r.JSON(&err))
 	}
 
-	key_id := c.Param("key_id")
-	if key_id == "" {
-		err := "cust_id  is required"
-		return c.Render(400, r.JSON(&err))
-	}
-
 	cert := &models.Certificate{}
-	keydata, err := cert.DownloadKey(tx, cert_id, cust_id, key_id)
+	keydata, err := cert.DownloadKey(tx, cert_id, cust_id)
 	if err != nil {
 		errMsg := err.Error()
 		return c.Render(500, r.JSON(&errMsg))
@@ -147,14 +141,8 @@ func (cr CertificateActions) DownloadBody(c buffalo.Context) error {
 		return c.Render(400, r.JSON(&err))
 	}
 
-	body_id := c.Param("body_id")
-	if body_id == "" {
-		err := "body_id  is required"
-		return c.Render(400, r.JSON(&err))
-	}
-
 	cert := &models.Certificate{}
-	bodydata, err := cert.DownloadBody(tx, cust_id, cert_id, body_id)
+	bodydata, err := cert.DownloadBody(tx, cust_id, cert_id)
 	if err != nil {
 		errMsg := err.Error()
 		return c.Render(500, r.JSON(&errMsg))

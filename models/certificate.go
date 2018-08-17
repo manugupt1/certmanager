@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
@@ -25,7 +24,7 @@ type Certificate struct {
 	Activated  bool      `json:"activated" db:"activated"`
 	KeyPath    string    `json:"key_path" db:"key_path"`
 	BodyPath   string    `json:"body_path" db:"body_path"`
-	Customer   Customer  `belongs_to:"customer"`
+	Customer   Customer  `json:"-" belongs_to:"customer"`
 	CustomerID int       `db:"customer_id"`
 }
 
@@ -91,31 +90,30 @@ func (c *Certificate) CreateCertificate(tx *pop.Connection, custID string) error
 
 }
 
-func (c *Certificate) DownloadKey(tx *pop.Connection, cert_id, cust_id, key_id string) (string, error) {
-	err := tx.Where("id = ? AND customer_id = ? AND key_path = ?", cert_id, cust_id, key_id).First(c)
+func (c *Certificate) DownloadKey(tx *pop.Connection, cert_id, cust_id string) (string, error) {
+	err := tx.Where("id = ? AND customer_id = ?", cert_id, cust_id).First(c)
 	if err != nil {
 		return "", err
 	}
 	if c.Activated == false {
 		return "", errors.New("Key has been deactivated")
 	}
-	keyID := c.KeyPath
-	b, err := ioutil.ReadFile(filepath.Join(path, keyID))
+	b, err := ioutil.ReadFile(filepath.Join(path, c.KeyPath))
 	if err != nil {
 		return "", err
 	}
 	return string(b), nil
 }
 
-func (c *Certificate) DownloadBody(tx *pop.Connection, cust_id, cert_id, body_id string) (string, error) {
-	err := tx.Where("customer_id = ? AND id = ? AND body_path = ?", cust_id, cert_id, body_id).First(c)
+func (c *Certificate) DownloadBody(tx *pop.Connection, cust_id, cert_id string) (string, error) {
+	err := tx.Where("customer_id = ? AND id = ?", cust_id, cert_id).First(c)
 	if err != nil {
 		return "", err
 	}
 	if c.Activated == false {
 		return "", errors.New("Certificate has been deactivated")
 	}
-	b, err := ioutil.ReadFile(filepath.Join(path, body_id))
+	b, err := ioutil.ReadFile(filepath.Join(path, c.BodyPath))
 	if err != nil {
 		return "", err
 	}
@@ -139,7 +137,6 @@ func newCertificate(ctx context.Context) (string, string, error) {
 }
 
 func addCertificateMeta(ctx context.Context, custID string, key, body string) error {
-	fmt.Println("----------------------", custID, key, body)
 	query := `INSERT INTO certificates (activated, created_at, customer_id, updated_at, key_path, body_path) VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := SQL.Exec(query, true, time.Now(), custID, time.Now(), key, body)
 	if err != nil {
