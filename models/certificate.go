@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
@@ -138,6 +139,7 @@ func newCertificate(ctx context.Context) (string, string, error) {
 }
 
 func addCertificateMeta(ctx context.Context, custID string, key, body string) error {
+	fmt.Println("----------------------", custID, key, body)
 	query := `INSERT INTO certificates (activated, created_at, customer_id, updated_at, key_path, body_path) VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := SQL.Exec(query, true, time.Now(), custID, time.Now(), key, body)
 	if err != nil {

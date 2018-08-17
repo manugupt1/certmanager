@@ -79,7 +79,7 @@ function create_cert() {
     updateStatus("cust_id can't be empty and must be an integer")
     return;
   }
-  const createURL = "/certificate/" + cust_id + "/create"
+  const createURL = "/certificate/" + cust_id;
   Post(createURL)
     .then((response) => {
       const status = response.status;
@@ -138,7 +138,11 @@ function update_cert(cust_id, cert_id, active) {
     .then((response) => {
       const status = response.status;
       if (status == 200) {
-        updateStatus("Certificate deactivated")
+        if (active) {
+          updateStatus("Certificate deactivated")
+        } else {
+          updateStatus("Certificate activated")
+        }
         get_active_cert();
       } else {
         response.json()

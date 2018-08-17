@@ -64,7 +64,7 @@ func App() *buffalo.App {
 		certGroup.GET("/{cust_id}/{cert_id}/key/{key_id}", certHandler.DownloadKey)
 		certGroup.GET("/{cust_id}/{cert_id}/body/{body_id}", certHandler.DownloadBody)
 		certGroup.PATCH("/{cust_id}/{cert_id}", certHandler.UpdateStatus)
-		certGroup.POST("/{cust_id}/{cust_id}", certHandler.CreateCertificate)
+		certGroup.POST("/{cust_id}", certHandler.CreateCertificate)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
