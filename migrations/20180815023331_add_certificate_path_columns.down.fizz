@@ -1,0 +1,2 @@
+drop_column("certificates", "key_path", "string", {})
+drop_column("certificates", "body_path", "string", {})

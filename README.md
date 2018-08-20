@@ -1,35 +1,69 @@
-# Welcome to Buffalo!
+# Welcome to CertManager!
 
-Thank you for choosing Buffalo for your web development needs.
+## System requirements
+- Docker
+- Docker compose
+- Bash
+- Go
 
-## Database Setup
+## Building
+- Run the following executable `./build`  in the root folder
+This will take care of building images and the volumes and finally migrating the database
 
-It looks like you chose to set up your application using a postgres database! Fantastic!
+NB: If you build again, it will drop the database, but won't remove the volumes.
 
-The first thing you need to do is open up the "database.yml" file and edit it to use the correct usernames, passwords, hosts, etc... that are appropriate for your environment.
+## Running the app
 
-You will also need to make sure that **you** start/install the database of your choice. Buffalo **won't** install and start postgres for you.
+`docker-compose up certmanager`
 
-### Create Your Databases
+Run it on browser at
 
-Ok, so you've edited the "database.yml" file and started postgres, now Buffalo can create the databases in that file for you:
+`http://localhost:3000`
 
-	$ buffalo db create -a
+NB: Right now, we run it in development mode as we are forcing SSL on production.
+If the browser automatically redirects to `https`, this [stackoverflow](https://stackoverflow.com/questions/25277457/google-chrome-redirecting-localhost-to-https) post can be useful
 
-## Starting the Application
+## Running tests
 
-Buffalo ships with a command that will watch your application and automatically rebuild the Go binary and any assets for you. To do that run the "buffalo dev" command:
+`./test`
 
-	$ buffalo dev
+## Turning down the app to check persistence
 
-If you point your browser to [http://127.0.0.1:3000](http://127.0.0.1:3000) you should see a "Welcome to Buffalo!" page.
+`docker-compose down certmanager`
 
-**Congratulations!** You now have your Buffalo application up and running.
+## API documentation
 
-## What Next?
+### Get all customer
 
-We recommend you heading over to [http://gobuffalo.io](http://gobuffalo.io) and reviewing all of the great documentation there.
+		GET /customer/
 
-Good luck!
 
-[Powered by Buffalo](http://gobuffalo.io)
+### Create a customer
+
+		POST /
+
+### Delete a customer
+
+		DELETE /
+		{
+			"email":"example@example.com"
+		}
+
+### Get all, active, deactivated certificates for a given customer
+
+		GET /customer/{cust_id}/certificates"
+
+### Get the key as a blob for a given customer
+		GET /customer/{cust_id}/certificate/{cert_id}/key"
+
+		Allows download of only active certificate key
+
+### Get the body of the certificate as a blob for a given customer
+		GET /customer/{cust_id}/certificate/{cert_id}/body
+
+		Allows download of only active certificate body
+
+### Activate or deactivate a customer
+		PATCH /{cust_id}/certificate/{cert_id}?active=true/false
+
+
