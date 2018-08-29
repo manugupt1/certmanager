@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"net/http"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/manugupt1/certmanager/models"
@@ -29,10 +31,10 @@ func (cr CustomerActions) Create(c buffalo.Context) error {
 	}
 
 	if validationErrors.HasAny() {
-		return c.Render(422, r.JSON(validationErrors.Errors))
+		return c.Render(http.StatusBadRequest, r.JSON(validationErrors.Errors))
 	}
 
-	return c.Render(200, nil)
+	return c.Render(http.StatusOK, nil)
 }
 
 // List is the handler that will list all the customers stored in the db
@@ -44,7 +46,7 @@ func (cr CustomerActions) List(c buffalo.Context) error {
 	}
 	customers := &models.Customers{}
 	customers.List(tx)
-	return c.Render(200, r.JSON(customers))
+	return c.Render(http.StatusOK, r.JSON(customers))
 }
 
 // Delete is the handler which will delete a customer from the model
@@ -63,7 +65,7 @@ func (cr CustomerActions) Delete(c buffalo.Context) error {
 	err := customer.Delete(tx)
 	if err != nil {
 		errMsg := "No records found"
-		return c.Render(422, r.JSON(&errMsg))
+		return c.Render(http.StatusBadRequest, r.JSON(&errMsg))
 	}
-	return c.Render(200, nil)
+	return c.Render(http.StatusOK, nil)
 }
