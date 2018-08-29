@@ -47,7 +47,6 @@ func App() *buffalo.App {
 		app.Use(translations())
 
 		app.GET("/", HomeHandler)
-		app.GET("/cert", CertHandler)
 
 		custGroup := app.Group("/customer")
 		custHandler := &CustomerActions{}
