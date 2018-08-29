@@ -40,7 +40,7 @@ If the browser automatically redirects to `https`, this [stackoverflow](https://
 
 ### Create a customer
 
-		POST /
+		POST /customer/
 
 ### Delete a customer
 
@@ -65,5 +65,7 @@ If the browser automatically redirects to `https`, this [stackoverflow](https://
 
 ### Activate or deactivate a customer
 		PATCH /{cust_id}/certificate/{cert_id}?active=true/false
+
+NB: PATCH cannot be included as a payload in buffalo which is what we are using right now.
 
 
