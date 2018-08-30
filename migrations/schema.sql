@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.9
+-- Dumped from database version 10.5 (Debian 10.5-1.pgdg90+1)
 -- Dumped by pg_dump version 10.4
 
 SET statement_timeout = 0;
@@ -55,6 +55,7 @@ ALTER TABLE public.certificates OWNER TO postgres;
 --
 
 CREATE SEQUENCE public.certificates_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -92,6 +93,7 @@ ALTER TABLE public.customers OWNER TO postgres;
 --
 
 CREATE SEQUENCE public.customers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
