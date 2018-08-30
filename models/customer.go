@@ -19,7 +19,7 @@ type Customer struct {
 	UpdatedAt    time.Time    `json:"updated_at" db:"updated_at"`
 	Name         string       `json:"name,omitempty" db:"name"`
 	Email        string       `json:"email,omitempty" db:"email"`
-	Password     string       `json:"password,omitempty" db:"password"`
+	Password     []byte       `json:"password,omitempty" db:"password"`
 	Certificates Certificates `json:"certificates,omitempty" has_many:"certificates" order_by:"created_at desc"`
 }
 
@@ -52,7 +52,7 @@ func (c *Customers) List(tx *pop.Connection) error {
 // It hashes the password using bcrypt before storing in the database
 func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.StringIsPresent{Name: "Password", Field: c.Password},
+		&validators.StringIsPresent{Name: "Password", Field: string(c.Password)},
 		&validators.StringIsPresent{Name: "Name", Field: c.Name},
 		&validators.EmailIsPresent{Name: "Email", Field: c.Email, Message: "Email is not in the right format"},
 		&EmailNotTaken{Name: "Email", Field: c.Email, tx: tx},
@@ -60,17 +60,24 @@ func (c *Customer) Validate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (c *Customer) BeforeCreate(tx *pop.Connection) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(c.Password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword(c.Password, bcrypt.DefaultCost)
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	c.Password = string(hash)
+	c.Password = hash
 	return nil
 }
 
 // Create takes a running transaction and tries to add a Customer to the database. If it is not able to create one it will return an appropriate error.
 func (c *Customer) Create(tx *pop.Connection) (*validate.Errors, error) {
 	return tx.ValidateAndCreate(c)
+}
+
+// AfterCreate ensures that the reference to the pointer does not exist in the app anymore.
+func (c *Customer) AfterCreate(tx *pop.Connection) {
+	for i := range c.Password {
+		c.Password[i] = 0
+	}
 }
 
 func (c *Customer) Delete(tx *pop.Connection) error {

@@ -18,12 +18,15 @@ func Test_Customer(t *testing.T) {
 	suite.Run(t, as)
 }
 
+func toByte(str string) []byte {
+	return []byte(str)
+}
 func (c *CustomerSuite) Test_Validate() {
 	expectValidationErrors := []Customer{
-		Customer{Name: "M", Email: "manu@example.com", Password: ""},
-		Customer{Name: "Manu", Email: "", Password: "Gupta"},
-		Customer{Name: "", Email: "manu@example.com", Password: "Gupta"},
-		Customer{Name: "M", Email: "manuexample.com", Password: "G"},
+		Customer{Name: "M", Email: "manu@example.com", Password: toByte("")},
+		Customer{Name: "Manu", Email: "", Password: toByte("Gupta")},
+		Customer{Name: "", Email: "manu@example.com", Password: toByte("Gupta")},
+		Customer{Name: "M", Email: "manuexample.com", Password: toByte("G")},
 	}
 
 	for _, customer := range expectValidationErrors {
@@ -34,7 +37,7 @@ func (c *CustomerSuite) Test_Validate() {
 	}
 
 	expectToSucceed := []Customer{
-		Customer{Name: "M", Email: "manu@example.com", Password: "G"},
+		Customer{Name: "M", Email: "manu@example.com", Password: toByte("G")},
 	}
 	for _, customer := range expectToSucceed {
 		validationErrors, _ := customer.Validate(c.DB)
@@ -47,10 +50,10 @@ func (c *CustomerSuite) Test_Validate() {
 
 func (c *CustomerSuite) Test_Create() {
 	expectValidationErrors := []Customer{
-		Customer{Name: "M", Email: "manu@example.com", Password: ""},
-		Customer{Name: "Manu", Email: "", Password: "Gupta"},
-		Customer{Name: "", Email: "manu@example.com", Password: "Gupta"},
-		Customer{Name: "M", Email: "manuexample.com", Password: "G"},
+		Customer{Name: "M", Email: "manu@example.com", Password: toByte("")},
+		Customer{Name: "Manu", Email: "", Password: toByte("Gupta")},
+		Customer{Name: "", Email: "manu@example.com", Password: toByte("Gupta")},
+		Customer{Name: "M", Email: "manuexample.com", Password: toByte("G")},
 	}
 
 	for _, customer := range expectValidationErrors {
@@ -61,7 +64,7 @@ func (c *CustomerSuite) Test_Create() {
 	}
 
 	expectToSucceed := []*Customer{
-		&Customer{Name: "M", Email: "manu@example.com", Password: "G"},
+		&Customer{Name: "M", Email: "manu@example.com", Password: toByte("G")},
 	}
 
 	for _, customer := range expectToSucceed {
@@ -72,7 +75,7 @@ func (c *CustomerSuite) Test_Create() {
 		}
 	}
 
-	duplicateEmail := &Customer{Name: "m", Email: "manu@example.com", Password: "G"}
+	duplicateEmail := &Customer{Name: "m", Email: "manu@example.com", Password: toByte("G")}
 	vErr, _ := duplicateEmail.Create(c.DB)
 	if !vErr.HasAny() {
 		c.Fail("Expecting to fail on creating a customer with duplicate email")
