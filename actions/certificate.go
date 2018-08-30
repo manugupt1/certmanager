@@ -15,7 +15,7 @@ func (cr CertificateActions) ListCertificate(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 	certificate := &models.Certificates{}
 	uid := c.Param("cust_id")
@@ -37,7 +37,7 @@ func (cr CertificateActions) ListCertificate(c buffalo.Context) error {
 	}
 	err := certificate.ListCertificate(tx, uid, active)
 	if err != nil {
-		return c.Render(500, r.JSON(err))
+		return c.Render(http.StatusInternalServerError, r.JSON(err))
 	}
 	return c.Render(http.StatusOK, r.JSON(certificate))
 }
@@ -46,7 +46,7 @@ func (cr CertificateActions) UpdateStatus(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	id, err := strconv.Atoi(c.Param("cert_id"))
@@ -77,7 +77,7 @@ func (cr CertificateActions) CreateCertificate(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	id := c.Param("cust_id")
@@ -99,7 +99,7 @@ func (cr CertificateActions) DownloadKey(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	cert_id := c.Param("cert_id")
@@ -118,7 +118,7 @@ func (cr CertificateActions) DownloadKey(c buffalo.Context) error {
 	keydata, err := cert.DownloadKey(tx, cert_id, cust_id)
 	if err != nil {
 		errMsg := err.Error()
-		return c.Render(500, r.JSON(&errMsg))
+		return c.Render(http.StatusInternalServerError, r.JSON(&errMsg))
 	}
 	return c.Render(http.StatusOK, r.JSON(keydata))
 }
@@ -127,7 +127,7 @@ func (cr CertificateActions) DownloadBody(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	cert_id := c.Param("cert_id")
@@ -146,7 +146,7 @@ func (cr CertificateActions) DownloadBody(c buffalo.Context) error {
 	bodydata, err := cert.DownloadBody(tx, cust_id, cert_id)
 	if err != nil {
 		errMsg := err.Error()
-		return c.Render(500, r.JSON(&errMsg))
+		return c.Render(http.StatusInternalServerError, r.JSON(&errMsg))
 	}
 	return c.Render(http.StatusOK, r.JSON(bodydata))
 

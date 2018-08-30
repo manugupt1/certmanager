@@ -16,7 +16,7 @@ func (cr CustomerActions) Create(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	customer := &models.Customer{}
@@ -42,7 +42,7 @@ func (cr CustomerActions) List(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 	customers := &models.Customers{}
 	customers.List(tx)
@@ -54,7 +54,7 @@ func (cr CustomerActions) Delete(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	if tx == nil {
 		err := "Database connection lost"
-		return c.Render(500, r.JSON(&err))
+		return c.Render(http.StatusInternalServerError, r.JSON(&err))
 	}
 
 	customer := &models.Customer{}
