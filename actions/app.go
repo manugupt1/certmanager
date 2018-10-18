@@ -7,7 +7,6 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/unrolled/secure"
 
-	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
 	"github.com/manugupt1/certmanager/models"
@@ -37,7 +36,7 @@ func App() *buffalo.App {
 
 		// Protect against CSRF attacks. https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
 		// Remove to disable this.
-		app.Use(csrf.New)
+		// app.Use(csrf.New)
 
 		// Wraps each request in a transaction.
 		//  c.Value("tx").(*pop.PopTransaction)
@@ -48,6 +47,21 @@ func App() *buffalo.App {
 		app.Use(translations())
 
 		app.GET("/", HomeHandler)
+		app.GET("/cert", CertHandler)
+
+		custGroup := app.Group("/customer")
+		custHandler := &CustomerActions{}
+		certHandler := &CertificateActions{}
+
+		custGroup.Use(middleware.SetContentType("application/json"))
+		custGroup.GET("/", custHandler.List)
+		custGroup.POST("/", custHandler.Create)
+		custGroup.DELETE("/", custHandler.Delete)
+		custGroup.GET("/{cust_id}/certificates", certHandler.ListCertificate)
+		custGroup.GET("/{cust_id}/certificate/{cert_id}/key", certHandler.DownloadKey)
+		custGroup.GET("/{cust_id}/certificate/{cert_id}/body", certHandler.DownloadBody)
+		custGroup.PATCH("/{cust_id}/certificate/{cert_id}", certHandler.UpdateStatus)
+		custGroup.POST("/{cust_id}/certificate", certHandler.CreateCertificate)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

@@ -3,3 +3,9 @@
   translation: "CLOUDFLARE"
 - id: product
   translation: "Customer dashboard"
+- id: add_customer
+  translation: "Add customer"
+- id: delete_customer
+  translation: "Delete customer"
+- id: add_certificate
+  translation: "Create certificate"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker-compose up -d postgres
+cp database_local.yml database.yml
+go get -u -v github.com/gobuffalo/buffalo/buffalo
+buffalo test
+docker-compose down

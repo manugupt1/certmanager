@@ -1,0 +1,14 @@
+#!/bin/bash
+
+docker-compose build
+docker-compose down
+go get -u -v github.com/gobuffalo/buffalo/buffalo
+cp database_local.yml database.yml
+docker-compose up -d
+echo "Waiting for database to start"
+sleep 5
+buffalo db drop -a
+buffalo db create -a
+buffalo db migrate up
+cp database_docker.yml database.yml
+docker-compose down
